@@ -17,12 +17,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --orange: #FF4F00;
-    --orange-soft: #FFF1EB;
-    --navy: #0A1F44;
-    --navy-soft: #1B2D52;
+    /* Brand Guidelines V2 (rebrand 2026) */
+    --orange: #FF4F00;       /* Power Orange — primary */
+    --orange-light: #FF690A; /* Light variant */
+    --orange-dark: #CC3602;  /* Dark variant — hover */
+    --orange-soft: #FFF6EC;  /* Lighter — sfondo */
+    --navy: #171C4F;         /* Navy Dark — text/structure */
+    --navy-soft: #2A3068;    /* Navy mid (derivata) */
+    --navy-lighter: #DFE5FA; /* Navy Lighter — sfondi soft */
     --gray-100: #F5F6F8;
     --gray-200: #E5E7EC;
+    --gray-300: #D1D5DB;
+    --gray-400: #9CA3AF;
     --gray-500: #6B7280;
     --gray-700: #374151;
     --white: #FFFFFF;
@@ -159,46 +165,47 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 
   /* ===========================================
-     HubSpot Form — Muffin brand override
-     Doppio layer:
-     1) CSS custom properties --hsf-* (form NUOVO editor 2024+)
-        Fonte: developers.hubspot.com/.../forms/forms
-     2) Classi .hs-* (fallback legacy form)
-        Fonte: HubSpot Forms v3 legacy
+     HubSpot Form — Muffin Brand Guidelines V2
+     Doppio layer per coprire new editor + legacy.
+     Direzione design: editorial / non-nativo HubSpot.
+     - Label uppercase tracking
+     - Input grandi con bg soft, focus = orange ring 2px
+     - Submit con gradient + inner arrow, radius 14px
      =========================================== */
 
   /* === LAYER 1: NEW FORM (CSS variables --hsf-*) === */
   #hubspotForm {
-    /* Global */
+    /* Global — base Poppins, Navy Dark, Power Orange error */
     --hsf-global__font-family: 'Poppins', system-ui, sans-serif;
     --hsf-global__font-size: 15px;
-    --hsf-global__color: #0A1F44;
+    --hsf-global__color: #171C4F;
     --hsf-global-error__color: #DC2626;
 
-    /* Row spacing */
-    --hsf-row__horizontal-spacing: 12px;
-    --hsf-row__vertical-spacing: 14px;
-    --hsf-module__vertical-spacing: 14px;
+    /* Row spacing — più aria */
+    --hsf-row__horizontal-spacing: 14px;
+    --hsf-row__vertical-spacing: 18px;
+    --hsf-module__vertical-spacing: 18px;
 
-    /* Button (submit) */
+    /* Button (submit) — radius 14px (non pill), padding generoso */
     --hsf-button__font-family: 'Poppins', system-ui, sans-serif;
-    --hsf-button__font-size: 15px;
+    --hsf-button__font-size: 16px;
     --hsf-button__color: #FFFFFF;
     --hsf-button__background-color: #FF4F00;
-    --hsf-button__border-radius: 100px;
-    --hsf-button__padding: 14px 24px;
-    --hsf-button__box-shadow: 0 2px 8px rgba(255, 79, 0, 0.2);
+    --hsf-button__background-image: linear-gradient(135deg, #FF4F00 0%, #FF690A 100%);
+    --hsf-button__border-radius: 14px;
+    --hsf-button__padding: 18px 28px;
+    --hsf-button__box-shadow: 0 8px 24px rgba(255, 79, 0, 0.28), 0 2px 4px rgba(255, 79, 0, 0.15);
 
     /* Rich text */
     --hsf-richtext__font-family: 'Poppins', system-ui, sans-serif;
     --hsf-richtext__font-size: 13px;
     --hsf-richtext__color: #6B7280;
 
-    /* Heading (form internal headings) */
+    /* Heading */
     --hsf-heading__font-family: 'Poppins', system-ui, sans-serif;
-    --hsf-heading__color: #0A1F44;
+    --hsf-heading__color: #171C4F;
 
-    /* Background (form container — trasparente perché stiamo dentro form-card) */
+    /* Background — trasparente, siamo dentro form-card */
     --hsf-background__background-color: transparent;
     --hsf-background__border-style: none;
     --hsf-background__border-radius: 0;
@@ -214,60 +221,58 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     --hsf-infoalert__font-size: 12px;
     --hsf-infoalert__color: #6B7280;
 
-    /* Field label */
+    /* Field label — uppercase editorial */
     --hsf-field-label__font-family: 'Poppins', system-ui, sans-serif;
-    --hsf-field-label__font-size: 13px;
-    --hsf-field-label__color: #374151;
+    --hsf-field-label__font-size: 11px;
+    --hsf-field-label__color: #6B7280;
     --hsf-field-label-requiredindicator__color: #FF4F00;
 
-    /* Field description (helper text) */
+    /* Field description / footer */
     --hsf-field-description__font-family: 'Poppins', system-ui, sans-serif;
     --hsf-field-description__color: #6B7280;
-
-    /* Field footer */
     --hsf-field-footer__font-family: 'Poppins', system-ui, sans-serif;
     --hsf-field-footer__color: #6B7280;
 
-    /* Field input (text / email / select) */
+    /* Field input — bg gray-soft, no border, padding generoso */
     --hsf-field-input__font-family: 'Poppins', system-ui, sans-serif;
-    --hsf-field-input__color: #0A1F44;
-    --hsf-field-input__background-color: #FFFFFF;
+    --hsf-field-input__color: #171C4F;
+    --hsf-field-input__background-color: #F5F6F8;
     --hsf-field-input__placeholder-color: #9CA3AF;
-    --hsf-field-input__border-color: #E5E7EC;
-    --hsf-field-input__border-width: 1px;
+    --hsf-field-input__border-color: transparent;
+    --hsf-field-input__border-width: 2px;
     --hsf-field-input__border-style: solid;
-    --hsf-field-input__border-radius: 10px;
-    --hsf-field-input__padding: 12px 14px;
+    --hsf-field-input__border-radius: 12px;
+    --hsf-field-input__padding: 16px 18px;
 
     /* Field textarea */
     --hsf-field-textarea__font-family: 'Poppins', system-ui, sans-serif;
-    --hsf-field-textarea__color: #0A1F44;
-    --hsf-field-textarea__background-color: #FFFFFF;
+    --hsf-field-textarea__color: #171C4F;
+    --hsf-field-textarea__background-color: #F5F6F8;
     --hsf-field-textarea__placeholder-color: #9CA3AF;
-    --hsf-field-textarea__border-color: #E5E7EC;
-    --hsf-field-textarea__border-width: 1px;
+    --hsf-field-textarea__border-color: transparent;
+    --hsf-field-textarea__border-width: 2px;
     --hsf-field-textarea__border-style: solid;
-    --hsf-field-textarea__border-radius: 10px;
-    --hsf-field-textarea__padding: 12px 14px;
+    --hsf-field-textarea__border-radius: 12px;
+    --hsf-field-textarea__padding: 16px 18px;
 
     /* Field checkbox */
     --hsf-field-checkbox__padding: 0;
     --hsf-field-checkbox__background-color: #FFFFFF;
-    --hsf-field-checkbox__color: #0A1F44;
-    --hsf-field-checkbox__border-color: #E5E7EC;
-    --hsf-field-checkbox__border-width: 1px;
+    --hsf-field-checkbox__color: #171C4F;
+    --hsf-field-checkbox__border-color: #D1D5DB;
+    --hsf-field-checkbox__border-width: 2px;
     --hsf-field-checkbox__border-style: solid;
 
     /* Field radio */
     --hsf-field-radio__padding: 0;
     --hsf-field-radio__background-color: #FFFFFF;
-    --hsf-field-radio__color: #0A1F44;
-    --hsf-field-radio__border-color: #E5E7EC;
-    --hsf-field-radio__border-width: 1px;
+    --hsf-field-radio__color: #171C4F;
+    --hsf-field-radio__border-color: #D1D5DB;
+    --hsf-field-radio__border-width: 2px;
     --hsf-field-radio__border-style: solid;
   }
 
-  /* === LAYER 2: LEGACY FORM (classi .hs-*) fallback === */
+  /* === LAYER 2: LEGACY FORM (classi .hs-*) — design editorial === */
   #hubspotForm form,
   #hubspotForm .hs-form {
     font-family: 'Poppins', system-ui, sans-serif !important;
@@ -282,113 +287,160 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     width: 100% !important;
   }
   #hubspotForm .hs-form-field {
-    margin-bottom: 14px !important;
+    margin-bottom: 18px !important;
   }
+  /* Label: uppercase tracking editorial */
   #hubspotForm .hs-form-field > label,
   #hubspotForm .hs-fieldtype-text > label,
-  #hubspotForm .hs-fieldtype-select > label {
+  #hubspotForm .hs-fieldtype-select > label,
+  #hubspotForm .hs-fieldtype-textarea > label {
     display: block !important;
-    font-size: 13px !important;
+    font-size: 11px !important;
     font-weight: 600 !important;
-    color: var(--gray-700) !important;
-    margin-bottom: 6px !important;
+    color: var(--gray-500) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    margin-bottom: 8px !important;
   }
   #hubspotForm .hs-form-required {
     color: var(--orange) !important;
-    margin-left: 3px;
+    margin-left: 4px !important;
+    font-weight: 700;
   }
   #hubspotForm .hs-field-desc {
     font-size: 12px !important;
     color: var(--gray-500) !important;
-    margin-top: 4px !important;
+    margin-top: 6px !important;
   }
   #hubspotForm .input { margin-right: 0 !important; }
+  /* Input: bg soft gray, no border, padding generoso */
   #hubspotForm .hs-input {
     width: 100% !important;
-    padding: 12px 14px !important;
-    border: 1px solid var(--gray-200) !important;
-    border-radius: 10px !important;
+    padding: 16px 18px !important;
+    border: 2px solid transparent !important;
+    border-radius: 12px !important;
     font-family: inherit !important;
     font-size: 15px !important;
+    font-weight: 500 !important;
     color: var(--navy) !important;
-    background: var(--white) !important;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+    background: var(--gray-100) !important;
+    transition: all 0.18s ease !important;
     outline: none !important;
     box-sizing: border-box !important;
     line-height: 1.4 !important;
   }
-  #hubspotForm .hs-input:focus {
-    border-color: var(--orange) !important;
-    box-shadow: 0 0 0 3px var(--orange-soft) !important;
+  #hubspotForm .hs-input::placeholder {
+    color: var(--gray-400);
+    font-weight: 400;
   }
+  #hubspotForm .hs-input:hover {
+    background: #EEF0F4 !important;
+  }
+  #hubspotForm .hs-input:focus {
+    background: var(--white) !important;
+    border-color: var(--orange) !important;
+    box-shadow: 0 0 0 4px var(--orange-soft) !important;
+  }
+  /* Select dropdown — freccia custom */
   #hubspotForm select.hs-input {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23171C4F' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E') !important;
     background-repeat: no-repeat !important;
-    background-position: right 14px center !important;
-    padding-right: 38px !important;
+    background-position: right 18px center !important;
+    padding-right: 44px !important;
+    cursor: pointer;
   }
   #hubspotForm textarea.hs-input {
-    min-height: 90px;
+    min-height: 100px;
     resize: vertical;
   }
+  /* Error states */
   #hubspotForm .hs-error-msg,
   #hubspotForm .hs-error-msgs label {
     color: #DC2626 !important;
     font-size: 12px !important;
     font-weight: 500 !important;
-    margin-top: 4px !important;
+    margin-top: 6px !important;
+    display: flex !important;
+    align-items: center;
+    gap: 4px;
+  }
+  #hubspotForm .hs-error-msg::before,
+  #hubspotForm .hs-error-msgs label::before {
+    content: "⚠";
+    font-size: 11px;
   }
   #hubspotForm input.invalid.error,
   #hubspotForm .hs-input.error {
+    background: #FEF2F2 !important;
     border-color: #DC2626 !important;
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
   }
+  /* Submit container */
   #hubspotForm .hs_submit,
   #hubspotForm .hs-submit {
-    margin-top: 8px !important;
+    margin-top: 10px !important;
   }
+  /* Submit button: gradient + radius 14px + shadow + arrow */
   #hubspotForm .hs-button,
   #hubspotForm input[type="submit"].hs-button,
   #hubspotForm button[type="submit"] {
+    position: relative;
     display: block !important;
     width: 100% !important;
-    padding: 14px 24px !important;
+    padding: 18px 28px !important;
     background: var(--orange) !important;
+    background-image: linear-gradient(135deg, var(--orange) 0%, var(--orange-light) 100%) !important;
     color: var(--white) !important;
     border: none !important;
-    border-radius: 100px !important;
+    border-radius: 14px !important;
     font-family: inherit !important;
-    font-size: 15px !important;
+    font-size: 16px !important;
     font-weight: 600 !important;
+    letter-spacing: 0.01em;
     cursor: pointer !important;
-    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease !important;
-    box-shadow: 0 2px 8px rgba(255, 79, 0, 0.2) !important;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease !important;
+    box-shadow: 0 8px 24px rgba(255, 79, 0, 0.28), 0 2px 4px rgba(255, 79, 0, 0.15) !important;
     text-shadow: none !important;
     line-height: 1.2 !important;
   }
   #hubspotForm .hs-button:hover,
   #hubspotForm input[type="submit"].hs-button:hover,
   #hubspotForm button[type="submit"]:hover {
-    background: #E64700 !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 14px rgba(255, 79, 0, 0.3) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 12px 32px rgba(255, 79, 0, 0.36), 0 4px 8px rgba(255, 79, 0, 0.2) !important;
+    filter: brightness(1.04);
   }
   #hubspotForm .hs-button:active,
   #hubspotForm button[type="submit"]:active {
     transform: translateY(0) !important;
+    box-shadow: 0 4px 12px rgba(255, 79, 0, 0.25) !important;
   }
-  /* Submitted thank-you message */
+  /* Submitted thank-you message — branded */
   #hubspotForm .submitted-message {
     text-align: center;
-    padding: 20px 16px;
+    padding: 32px 20px;
     color: var(--navy);
     background: var(--orange-soft);
-    border-radius: 12px;
-    font-weight: 500;
-    font-size: 14px;
+    border: 2px solid var(--orange);
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  #hubspotForm .submitted-message::before {
+    content: "✓";
+    display: block;
+    width: 44px;
+    height: 44px;
+    line-height: 44px;
+    background: var(--orange);
+    color: var(--white);
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    font-size: 24px;
+    font-weight: 700;
   }
   /* Checkbox / radio list */
   #hubspotForm .inputs-list,
@@ -398,45 +450,60 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     padding: 0 !important;
   }
   #hubspotForm .inputs-list li {
-    margin-bottom: 6px !important;
+    margin-bottom: 8px !important;
   }
   #hubspotForm .hs-form-booleancheckbox label,
   #hubspotForm .hs-form-checkbox label,
   #hubspotForm .hs-form-radio label {
     display: flex !important;
     align-items: flex-start !important;
-    gap: 8px !important;
-    font-size: 13px !important;
+    gap: 10px !important;
+    font-size: 13.5px !important;
     font-weight: 400 !important;
     color: var(--gray-700) !important;
     cursor: pointer !important;
     line-height: 1.5 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
   }
   #hubspotForm input[type="checkbox"].hs-input,
   #hubspotForm input[type="radio"].hs-input {
-    width: 16px !important;
-    height: 16px !important;
-    margin: 2px 0 0 0 !important;
+    width: 18px !important;
+    height: 18px !important;
+    margin: 1px 0 0 0 !important;
     padding: 0 !important;
     accent-color: var(--orange);
     flex-shrink: 0;
+    cursor: pointer;
   }
   /* GDPR / legal consent block */
   #hubspotForm .legal-consent-container {
     font-size: 12px !important;
     color: var(--gray-500) !important;
-    margin-top: 12px !important;
-    line-height: 1.5 !important;
+    margin-top: 16px !important;
+    padding-top: 16px;
+    border-top: 1px solid var(--gray-200);
+    line-height: 1.55 !important;
   }
   #hubspotForm .legal-consent-container p {
     margin-bottom: 8px !important;
   }
   #hubspotForm .legal-consent-container a {
     color: var(--orange) !important;
-    text-decoration: underline;
+    text-decoration: none;
+    border-bottom: 1px solid var(--orange);
+    transition: opacity 0.15s ease;
+  }
+  #hubspotForm .legal-consent-container a:hover {
+    opacity: 0.7;
   }
   #hubspotForm .hs_recaptcha {
-    margin: 12px 0 !important;
+    margin: 14px 0 !important;
+  }
+  /* Powered by HubSpot link — nascondiamo (no native vibe) */
+  #hubspotForm .hs-form .hs-form-content .hs-form-private-policy-link,
+  #hubspotForm a[href*="hubspot.com"] {
+    /* lasciamo visibili i link che HubSpot richiede legalmente */
   }
 
   /* Quick value list */

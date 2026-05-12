@@ -37,7 +37,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </script>
 <style>
   body { font-family: 'Poppins', system-ui, sans-serif; }
-  /* Animazione numeri */
   .num-animated { transition: color 0.2s ease; }
   .num-pulse { animation: pulse 0.4s ease; }
   @keyframes pulse {
@@ -45,31 +44,52 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     50% { transform: scale(1.04); color: #FF4F00; }
     100% { transform: scale(1); }
   }
-  /* Custom scrollbar */
   .scroll-thin::-webkit-scrollbar { width: 6px; }
   .scroll-thin::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
-  /* Step active glow */
   .step-card.is-active {
     border-color: #FF4F00 !important;
     box-shadow: 0 4px 20px rgba(255, 79, 0, 0.08);
   }
-  /* Input focus brand */
   input:focus, select:focus {
     outline: none !important;
     border-color: #FF4F00 !important;
     box-shadow: 0 0 0 3px #FFF1EB !important;
   }
-  /* Hide arrows on number inputs */
   input[type=number]::-webkit-inner-spin-button,
   input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
   input[type=number] { -moz-appearance: textfield; }
+
+  /* Tooltip */
+  .tip { position: relative; display: inline-flex; align-items: center; cursor: help; }
+  .tip .tip-body {
+    position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%);
+    background: #0A1F44; color: #fff; padding: 8px 10px; border-radius: 8px;
+    font-size: 11px; line-height: 1.4; width: 220px; opacity: 0; pointer-events: none;
+    transition: opacity .15s ease; z-index: 50; font-weight: 400;
+  }
+  .tip:hover .tip-body { opacity: 1; }
+
+  /* Bar chart */
+  .bar { background: linear-gradient(90deg, #FF4F00, #FF7A40); height: 100%; transition: width .25s ease; border-radius: 4px; }
+
+  /* Warning */
+  .warn { background: #FEF3C7; border: 1px solid #FCD34D; color: #92400E; }
+
+  /* Radio pill */
+  .pill-radio input { display:none }
+  .pill-radio label {
+    display: block; padding: 10px 14px; border: 1px solid #E5E7EB; border-radius: 12px;
+    cursor: pointer; text-align: center; font-size: 13px; font-weight: 600; transition: all .15s;
+    background: #fff;
+  }
+  .pill-radio input:checked + label {
+    border-color: #FF4F00; background: #FFF1EB; color: #FF4F00;
+  }
 </style>
 </head>
 <body class="bg-slate-50 text-m-navy">
-<!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-57XG7FL"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
 
 <!-- Header -->
 <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
@@ -77,7 +97,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a href="./index.html" class="flex items-center gap-3">
       <img src="https://getmuffin.io/wp-content/uploads/2026/04/Muffin-logo.png" alt="Muffin" class="h-8 w-auto">
     </a>
-    <a href="./guida.html" class="text-sm text-slate-600 hover:text-m-orange transition-colors flex items-center gap-1">
+    <a href="./index.html" class="text-sm text-slate-600 hover:text-m-orange transition-colors flex items-center gap-1">
       <span>←</span> Torna alla guida
     </a>
   </div>
@@ -91,7 +111,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       Quanto vale davvero l'iperammortamento <em class="not-italic text-m-orange">sul tuo investimento?</em>
     </h1>
     <p class="text-slate-700 max-w-2xl text-base md:text-lg">
-      Compila i 4 step. Vediamo subito quanto risparmi sulle tasse, scaglione per scaglione, anno per anno. Logica fedele alla L. 199/2025 art. 1 commi 427-436.
+      Compila il form. Calcoliamo subito la maggiorazione, il piano pluriennale e il beneficio fiscale anno per anno. Logica fedele a L. 199/2025 art. 1 commi 427-436.
     </p>
   </div>
 </section>
@@ -101,57 +121,151 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="grid lg:grid-cols-5 gap-8">
 
     <!-- ================================ -->
-    <!-- COLONNA SINISTRA: Wizard 4 Step  -->
+    <!-- COLONNA SINISTRA: Input          -->
     <!-- ================================ -->
     <div class="lg:col-span-3 space-y-4">
 
-      <!-- Progress indicator -->
-      <div class="flex items-center gap-2 mb-2">
-        <div class="text-xs font-semibold text-slate-500">PROGRESSO</div>
-        <div class="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-          <div id="progressBar" class="h-full bg-m-orange transition-all duration-300" style="width: 0%"></div>
+      <!-- STEP 0: Setup -->
+      <div id="step0" class="step-card bg-white border border-slate-200 rounded-2xl p-6 transition-all">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-full bg-m-orange-soft text-m-orange font-bold flex items-center justify-center text-sm">0</div>
+          <div>
+            <h2 class="font-semibold text-base">Setup investimento</h2>
+            <p class="text-xs text-slate-500">Tipologia e anno</p>
+          </div>
         </div>
-        <div class="text-xs font-semibold text-slate-700"><span id="progressText">0/4</span></div>
+
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Anno investimento</label>
+            <select id="annoInv" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-semibold">
+              <option value="2026">2026</option>
+              <option value="2027">2027</option>
+              <option value="2028">2028</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Aliquota IRES (%)</label>
+            <div class="relative">
+              <input type="number" id="ires" min="0" max="100" step="0.5" value="24"
+                class="w-full pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-semibold">
+              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">%</span>
+            </div>
+          </div>
+        </div>
+
+        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tipologia di acquisto</label>
+        <div class="pill-radio grid grid-cols-2 gap-3">
+          <div>
+            <input type="radio" id="tipoAcq-acquisto" name="tipoAcq" value="acquisto" checked>
+            <label for="tipoAcq-acquisto">Acquisto diretto</label>
+          </div>
+          <div>
+            <input type="radio" id="tipoAcq-leasing" name="tipoAcq" value="leasing">
+            <label for="tipoAcq-leasing">Leasing</label>
+          </div>
+        </div>
+
+        <!-- Pannello Leasing (visibile solo se selezionato) -->
+        <div id="leasingPanel" class="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl hidden">
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                Categoria in leasing
+                <span class="tip text-slate-400 ml-1">ⓘ
+                  <span class="tip-body">Selezionando "Tutti", il piano canoni si applica a tutte e 3 le categorie. Le altre seguono l'ammortamento ordinario.</span>
+                </span>
+              </label>
+              <select id="leasingCat" class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm font-medium">
+                <option value="tutti">Tutti</option>
+                <option value="materiale">Solo Materiali</option>
+                <option value="immateriale">Solo Immateriali</option>
+                <option value="energia">Solo Energia</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">Durata leasing (anni)</label>
+              <input type="number" id="leasingDurata" min="1" step="1" value="5"
+                class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm font-semibold">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                Coefficiente amm. (%)
+                <span class="tip text-slate-400 ml-1">ⓘ
+                  <span class="tip-body">Coefficiente ministeriale del bene. Durata fiscale minima = MAX(durata leasing, 1/coefficiente).</span>
+                </span>
+              </label>
+              <input type="number" id="leasingCoef" min="0.1" max="100" step="0.5" value="20"
+                class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-sm font-semibold">
+            </div>
+          </div>
+          <p id="leasingInfo" class="text-xs text-amber-800 mt-3"></p>
+        </div>
       </div>
 
       <!-- STEP 1: Beni Materiali -->
       <div id="step1" class="step-card bg-white border border-slate-200 rounded-2xl p-6 transition-all">
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full bg-m-orange-soft text-m-orange font-bold flex items-center justify-center text-sm">1</div>
-            <div>
-              <h2 class="font-semibold text-base">Beni Materiali 4.0</h2>
-              <p class="text-xs text-slate-500">Macchinari, impianti, attrezzature interconnesse</p>
-            </div>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-full bg-m-orange-soft text-m-orange font-bold flex items-center justify-center text-sm">1</div>
+          <div>
+            <h2 class="font-semibold text-base">Beni Materiali 4.0</h2>
+            <p class="text-xs text-slate-500">Macchinari, impianti, attrezzature interconnesse</p>
           </div>
         </div>
-        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Importo investimento (€)</label>
-        <div class="relative">
-          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">€</span>
-          <input type="number" id="matBeni" min="0" step="1000" value="100000"
-            class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-lg font-semibold transition-all">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Importo netto IVA (€)</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">€</span>
+              <input type="number" id="matBeni" min="0" step="1000" value="100000"
+                class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-lg font-semibold">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+              % ammortamento
+              <span class="tip text-slate-400 ml-1">ⓘ
+                <span class="tip-body">Coefficiente ministeriale del bene (es. 20% = 5 anni). In leasing per questa categoria viene ignorato.</span>
+              </span>
+            </label>
+            <div class="relative">
+              <input type="number" id="matPerc" min="0" max="100" step="0.5" value="20"
+                class="w-full pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-lg font-semibold">
+              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">%</span>
+            </div>
+          </div>
         </div>
         <p class="text-xs text-slate-500 mt-2">Costo storico al netto IVA. Es. nuovo macchinario CNC, robot, linea automatizzata.</p>
       </div>
 
       <!-- STEP 2: Beni Immateriali -->
       <div id="step2" class="step-card bg-white border border-slate-200 rounded-2xl p-6 transition-all">
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full bg-m-orange-soft text-m-orange font-bold flex items-center justify-center text-sm">2</div>
-            <div>
-              <h2 class="font-semibold text-base">Beni Immateriali 4.0</h2>
-              <p class="text-xs text-slate-500">Software produttivi, MES, SCM, sistemi di interconnessione</p>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-full bg-m-orange-soft text-m-orange font-bold flex items-center justify-center text-sm">2</div>
+          <div>
+            <h2 class="font-semibold text-base">Beni Immateriali 4.0</h2>
+            <p class="text-xs text-slate-500">Software produttivi, MES, SCM, sistemi di interconnessione</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Importo netto IVA (€)</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">€</span>
+              <input type="number" id="immBeni" min="0" step="1000" value="0"
+                class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-lg font-semibold">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">% ammortamento</label>
+            <div class="relative">
+              <input type="number" id="immPerc" min="0" max="100" step="0.5" value="50"
+                class="w-full pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-lg font-semibold">
+              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">%</span>
             </div>
           </div>
         </div>
-        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Importo investimento (€)</label>
-        <div class="relative">
-          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">€</span>
-          <input type="number" id="immBeni" min="0" step="1000" value="0"
-            class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-lg font-semibold transition-all">
-        </div>
-        <p class="text-xs text-slate-500 mt-2">⚠️ Solo moduli legati a produzione/logistica/manutenzione. Contabilità e HR non rientrano (cfr. Circolare 4/E).</p>
+        <p class="text-xs text-slate-500 mt-2">⚠️ Solo moduli legati a produzione/logistica/manutenzione (cfr. Circolare 4/E).</p>
       </div>
 
       <!-- STEP 3: Fotovoltaico -->
@@ -160,72 +274,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="flex items-center gap-3">
             <div class="w-9 h-9 rounded-full bg-m-orange-soft text-m-orange font-bold flex items-center justify-center text-sm">3</div>
             <div>
-              <h2 class="font-semibold text-base">Impianto Fotovoltaico</h2>
-              <p class="text-xs text-slate-500">Lascia 0 se non previsto</p>
+              <h2 class="font-semibold text-base">Autoproduzione energia (Fotovoltaico)</h2>
+              <p class="text-xs text-slate-500">Uno o più impianti. Capping per fascia kWp.</p>
             </div>
           </div>
+          <button id="addFV" type="button" class="text-xs font-semibold text-m-orange hover:text-m-orange-dark border border-m-orange/30 hover:border-m-orange rounded-lg px-3 py-1.5 transition">+ Aggiungi impianto</button>
         </div>
-        <div class="grid grid-cols-2 gap-3 mb-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Potenza (kWp)</label>
-            <input type="number" id="kwp" min="0" step="1" value="0"
-              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-lg font-semibold transition-all">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tipologia modulo</label>
-            <select id="tipoPV" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-medium transition-all">
-              <option value="">— Nessuno —</option>
-              <option value="B">Lettera B</option>
-              <option value="C">Lettera C</option>
-            </select>
-          </div>
+
+        <div id="fvList" class="space-y-3">
+          <!-- popolato via JS -->
         </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Costo PV reale (€) — opzionale</label>
-          <div class="relative">
-            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">€</span>
-            <input type="number" id="costoPV" min="0" step="1000" placeholder="Lascia vuoto per usare solo il cap"
-              class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base transition-all">
+
+        <div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-slate-100">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">% ammortamento Energia</label>
+            <div class="relative">
+              <input type="number" id="enePerc" min="0" max="100" step="0.5" value="20"
+                class="w-full pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-lg font-semibold">
+              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">%</span>
+            </div>
           </div>
-          <p class="text-xs text-slate-500 mt-2">
-            <span id="pvCapHint" class="hidden">Cap calcolato: <strong id="pvCapValue" class="text-m-orange">€ 0</strong> · Importo ammissibile: <strong id="pvAmmValue" class="text-m-orange">€ 0</strong></span>
-            <span id="pvCapPlaceholder">Se compilato, applichiamo MIN(costo reale, cap kWp×€/kWp).</span>
-          </p>
+          <div class="text-xs text-slate-500 self-end pb-3">
+            Totale FV agevolabile: <strong id="totalFVHint" class="text-m-orange">€ 0</strong>
+          </div>
         </div>
       </div>
 
-      <!-- STEP 4: Ammortamento -->
-      <div id="step4" class="step-card bg-white border border-slate-200 rounded-2xl p-6 transition-all">
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full bg-m-orange-soft text-m-orange font-bold flex items-center justify-center text-sm">4</div>
-            <div>
-              <h2 class="font-semibold text-base">Coefficiente di ammortamento</h2>
-              <p class="text-xs text-slate-500">Per il piano cash-flow anno per anno</p>
-            </div>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Coefficiente (%)</label>
-            <div class="relative">
-              <input type="number" id="coefAmm" min="1" max="100" step="0.5" value="20"
-                class="w-full pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-lg font-semibold transition-all">
-              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">%</span>
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Aliquota IRES (%)</label>
-            <div class="relative">
-              <input type="number" id="ires" min="0" max="100" step="0.5" value="24"
-                class="w-full pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-lg font-semibold transition-all">
-              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">%</span>
-            </div>
-          </div>
-        </div>
-        <p class="text-xs text-slate-500 mt-3">
-          Coefficiente ministeriale (es. 20% = 5 anni). Cash-flow proiettato linearmente. L'iperammortamento non subisce il dimezzamento del primo anno (cfr. Q3 della guida).
-        </p>
+      <!-- Warning >20M -->
+      <div id="warn20M" class="warn rounded-xl p-4 text-sm hidden">
+        ⚠️ <strong>Attenzione:</strong> il totale investimento supera 20.000.000 €. L'eccedenza <span id="excessVal" class="font-bold"></span> non è agevolabile. I calcoli sotto considerano solo la quota agevolabile (cap 20M).
       </div>
 
     </div>
@@ -237,50 +314,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="lg:sticky lg:top-24 space-y-4">
 
         <div class="bg-m-navy text-white rounded-2xl p-6 shadow-xl">
-          <div class="text-xs uppercase tracking-widest opacity-70 font-semibold mb-1">Risparmio fiscale stimato</div>
-          <div id="bigResult" class="num-animated text-4xl md:text-5xl font-bold text-m-orange mb-1">€ 43.200</div>
-          <div class="text-sm opacity-85">su <span id="bigMagg" class="font-semibold">€ 180.000</span> di maggiorazione totale</div>
+          <div class="text-xs uppercase tracking-widest opacity-70 font-semibold mb-1">Beneficio fiscale totale</div>
+          <div id="bigResult" class="num-animated text-4xl md:text-5xl font-bold text-m-orange mb-1">€ 0</div>
+          <div class="text-sm opacity-85">maggiorazione × IRES <span id="bigIres">24%</span></div>
 
           <div class="border-t border-white/10 my-5"></div>
 
           <div class="space-y-2.5 text-sm">
             <div class="flex justify-between opacity-80">
-              <span>Investimento totale</span>
-              <span id="rTotale" class="font-semibold">€ 100.000</span>
+              <span>Investimento agevolabile</span>
+              <span id="rTotale" class="font-semibold">€ 0</span>
             </div>
-            <div class="flex justify-between">
-              <span class="opacity-80">1ª fascia <span class="text-xs opacity-60 ml-1">180% · ≤ 2,5M</span></span>
-              <span id="rSc1" class="font-semibold">€ 180.000</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="opacity-80">2ª fascia <span class="text-xs opacity-60 ml-1">100% · 2,5–10M</span></span>
-              <span id="rSc2" class="font-semibold">€ 0</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="opacity-80">3ª fascia <span class="text-xs opacity-60 ml-1">50% · 10–20M</span></span>
-              <span id="rSc3" class="font-semibold">€ 0</span>
+            <div class="flex justify-between opacity-80">
+              <span>Maggiorazione totale</span>
+              <span id="rMagg" class="font-semibold">€ 0</span>
             </div>
             <div class="flex justify-between pt-2 border-t border-white/10">
-              <span class="font-semibold">Maggiorazione totale</span>
-              <span id="rMagg" class="font-bold text-m-orange">€ 180.000</span>
+              <span class="font-semibold">Valore totale ammortamento</span>
+              <span id="rValTot" class="font-bold text-m-orange">€ 0</span>
             </div>
-          </div>
-        </div>
-
-        <!-- Cash flow card -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-6">
-          <div class="flex justify-between items-center mb-3">
-            <div>
-              <div class="text-xs uppercase tracking-widest text-m-orange font-semibold mb-1">Cash flow</div>
-              <h3 class="font-semibold text-sm">Risparmio anno per anno</h3>
-            </div>
-            <div class="text-right">
-              <div class="text-2xl font-bold text-m-navy" id="annuiVal">5</div>
-              <div class="text-xs text-slate-500">anni</div>
-            </div>
-          </div>
-          <div id="cashFlowList" class="space-y-1.5 text-sm scroll-thin max-h-48 overflow-y-auto">
-            <!-- popolato via JS -->
           </div>
         </div>
 
@@ -291,12 +343,85 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </button>
 
         <p class="text-xs text-slate-500 leading-relaxed">
-          Stima indicativa basata su L. 199/2025. Importi eccedenti €20M annuali non sono agevolabili. Per il calcolo definitivo serve perizia tecnica e certificazione contabile.
+          Stima indicativa basata su L. 199/2025. Importi eccedenti €20M annuali non sono agevolabili. La quota del primo anno è dimezzata (regola fiscale standard sull'ammortamento). Per il calcolo definitivo serve perizia tecnica e certificazione contabile.
         </p>
 
       </div>
     </div>
   </div>
+
+  <!-- ================================ -->
+  <!-- TABELLE DETTAGLIO                -->
+  <!-- ================================ -->
+  <div class="grid lg:grid-cols-2 gap-6 mt-10">
+
+    <!-- Ripartizione per scaglione -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6">
+      <div class="text-xs uppercase tracking-widest text-m-orange font-semibold mb-2">Dettaglio</div>
+      <h3 class="font-semibold text-base mb-4">Ripartizione per scaglione</h3>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-xs text-slate-500 border-b border-slate-200">
+            <th class="text-left py-2 font-semibold">Scaglione</th>
+            <th class="text-right py-2 font-semibold">Importo</th>
+            <th class="text-right py-2 font-semibold">Coeff.</th>
+            <th class="text-right py-2 font-semibold">Maggiorazione</th>
+          </tr>
+        </thead>
+        <tbody id="tableSc" class="text-slate-700"></tbody>
+      </table>
+    </div>
+
+    <!-- Ripartizione per categoria -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6">
+      <div class="text-xs uppercase tracking-widest text-m-orange font-semibold mb-2">Dettaglio</div>
+      <h3 class="font-semibold text-base mb-4">Maggiorazione per categoria</h3>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-xs text-slate-500 border-b border-slate-200">
+            <th class="text-left py-2 font-semibold">Categoria</th>
+            <th class="text-right py-2 font-semibold">Investimento</th>
+            <th class="text-right py-2 font-semibold">Maggiorazione</th>
+          </tr>
+        </thead>
+        <tbody id="tableCat" class="text-slate-700"></tbody>
+      </table>
+      <p class="text-xs text-slate-500 mt-3">Ripartizione a cascata: Materiali → Immateriali → Energia consumano in ordine il plafond degli scaglioni.</p>
+    </div>
+  </div>
+
+  <!-- Piano pluriennale + grafico -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-6 mt-6">
+    <div class="flex flex-wrap items-end justify-between mb-4 gap-3">
+      <div>
+        <div class="text-xs uppercase tracking-widest text-m-orange font-semibold mb-1">Piano pluriennale</div>
+        <h3 class="font-semibold text-base">Variazione fiscale e beneficio annuo</h3>
+        <p class="text-xs text-slate-500 mt-1">Anno 1: quota dimezzata (regola fiscale). Anni successivi a quota piena fino a esaurimento maggiorazione.</p>
+      </div>
+      <div class="text-right">
+        <div class="text-xs text-slate-500">Beneficio totale</div>
+        <div id="planTotal" class="text-2xl font-bold text-m-orange">€ 0</div>
+      </div>
+    </div>
+
+    <!-- Grafico barre -->
+    <div id="chart" class="space-y-1 mb-6"></div>
+
+    <!-- Tabella anno per anno -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-xs text-slate-500 border-b border-slate-200">
+            <th class="text-left py-2 font-semibold">Anno</th>
+            <th class="text-right py-2 font-semibold">Variazione fiscale</th>
+            <th class="text-right py-2 font-semibold">Beneficio (IRES)</th>
+          </tr>
+        </thead>
+        <tbody id="tablePlan" class="text-slate-700"></tbody>
+      </table>
+    </div>
+  </div>
+
 </section>
 
 <!-- Footer -->
@@ -304,82 +429,240 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="max-w-6xl mx-auto px-6 py-8 text-center text-sm text-slate-500">
     <div>© 2026 Muffin S.r.l. — La finanza agevolata smart</div>
     <div class="text-xs opacity-80 mt-2">
-      Riferimenti: L. 199/2025 art. 1 commi 427-436 · TUIR art. 109 · Circolare 4/E. Contenuto a scopo informativo per professionisti.
+      Riferimenti: L. 199/2025 art. 1 commi 427-436 · TUIR art. 109 · Circolare 4/E.
     </div>
   </div>
 </footer>
 
 <script>
-// ============================================
-// LOGICA DI CALCOLO
-// ============================================
+// ==========================================================================
+// CALCOLATORE IPERAMMORTAMENTO — Logica fedele alle specs Excel
+// ==========================================================================
+
+// --- LOOKUP costo max ammissibile €/kWp ----------------------------------
+const COSTO_MAX_KWP = {
+  B: [
+    { maxKWp: 20,    valore: 1420 },
+    { maxKWp: 200,   valore: 1120 },
+    { maxKWp: 600,   valore: 1020 },
+    { maxKWp: 1000,  valore: 910  },
+    { maxKWp: Infinity, valore: 840 }
+  ],
+  C: [
+    { maxKWp: 20,    valore: 1500 },
+    { maxKWp: 200,   valore: 1200 },
+    { maxKWp: 600,   valore: 1100 },
+    { maxKWp: 1000,  valore: 1000 },
+    { maxKWp: Infinity, valore: 940 }
+  ]
+};
 
 function getValoreKwp(kWp, tipo) {
-  if (tipo === 'B') {
-    if (kWp <= 20) return 1420;
-    if (kWp <= 200) return 1120;
-    if (kWp <= 600) return 1020;
-    if (kWp <= 1000) return 910;
-    return 840;
-  }
-  if (tipo === 'C') {
-    if (kWp <= 20) return 1500;
-    if (kWp <= 200) return 1200;
-    if (kWp <= 600) return 1100;
-    if (kWp <= 1000) return 1000;
-    return 940;
+  if (!tipo || !COSTO_MAX_KWP[tipo]) return 0;
+  for (const f of COSTO_MAX_KWP[tipo]) {
+    if (kWp <= f.maxKWp) return f.valore;
   }
   return 0;
 }
 
-function calcola() {
-  const matBeni = parseFloat(document.getElementById('matBeni').value) || 0;
-  const immBeni = parseFloat(document.getElementById('immBeni').value) || 0;
-  const kWp = parseFloat(document.getElementById('kwp').value) || 0;
-  const tipoPV = document.getElementById('tipoPV').value;
-  const costoPVReale = parseFloat(document.getElementById('costoPV').value) || 0;
-  const coefAmm = (parseFloat(document.getElementById('coefAmm').value) || 0) / 100;
+// --- COSTANTI scaglioni --------------------------------------------------
+const SCAGLIONI = {
+  ampiezze: [2_500_000, 7_500_000, 10_000_000],   // 0-2.5M | 2.5M-10M | 10M-20M
+  coeff:    [1.8, 1.0, 0.5]
+};
+const CAP_AGEVOLABILE = 20_000_000;
+
+// --- Ripartisce un importo categoria nei 3 scaglioni a cascata -----------
+function ripartisciPerScaglioni(importo, plafondGiaUsato) {
+  const ripartizione = [0, 0, 0];
+  let residuo = importo;
+  for (let i = 0; i < 3; i++) {
+    const disponibile = SCAGLIONI.ampiezze[i] - plafondGiaUsato[i];
+    const quota = Math.min(residuo, Math.max(0, disponibile));
+    ripartizione[i] = quota;
+    residuo -= quota;
+    if (residuo <= 0) break;
+  }
+  const maggiorazione = ripartizione.reduce((acc, q, i) => acc + q * SCAGLIONI.coeff[i], 0);
+  return { ripartizione, maggiorazione };
+}
+
+// --- Piano pluriennale (ammortamento ordinario, dim. anno 1) -------------
+function pianoAmmortamento(maggiorazione, percAmm, anniMax = 21) {
+  const piano = new Array(anniMax).fill(0);
+  if (maggiorazione <= 0 || percAmm <= 0) return piano;
+  let residuo = maggiorazione;
+  for (let anno = 0; anno < anniMax; anno++) {
+    let quota;
+    if (anno === 0) {
+      quota = maggiorazione * (percAmm / 2);
+    } else {
+      quota = maggiorazione * percAmm;
+    }
+    quota = Math.min(quota, residuo);
+    quota = Math.max(0, quota);
+    piano[anno] = quota;
+    residuo -= quota;
+    if (residuo <= 0.005) break;
+  }
+  return piano;
+}
+
+// --- Piano canoni leasing (distribuzione lineare su durata fiscale) ------
+function pianoLeasing(maggiorazione, durataFiscale, anniMax = 21) {
+  const piano = new Array(anniMax).fill(0);
+  if (maggiorazione <= 0 || durataFiscale <= 0) return piano;
+  const anni = Math.min(Math.ceil(durataFiscale), anniMax);
+  const quota = maggiorazione / durataFiscale;
+  let residuo = maggiorazione;
+  for (let i = 0; i < anni; i++) {
+    const q = Math.min(quota, residuo);
+    piano[i] = q;
+    residuo -= q;
+    if (residuo <= 0.005) break;
+  }
+  return piano;
+}
+
+// --- Lettura stato form --------------------------------------------------
+let fvImpianti = [
+  { kWp: 0, tipo: '', costo: 0 }
+];
+
+function leggiInput() {
+  const tipoAcq = document.querySelector('input[name="tipoAcq"]:checked').value;
+  const annoInv = parseInt(document.getElementById('annoInv').value, 10);
   const ires = (parseFloat(document.getElementById('ires').value) || 0) / 100;
 
-  // A. Capping PV
-  const valoreKwp = getValoreKwp(kWp, tipoPV);
-  const capPV = kWp * valoreKwp;
-  const importoAmmPV = (kWp > 0 && tipoPV)
-    ? (costoPVReale > 0 ? Math.min(costoPVReale, capPV) : capPV)
-    : 0;
+  const matBeni = parseFloat(document.getElementById('matBeni').value) || 0;
+  const matPerc = (parseFloat(document.getElementById('matPerc').value) || 0) / 100;
+  const immBeni = parseFloat(document.getElementById('immBeni').value) || 0;
+  const immPerc = (parseFloat(document.getElementById('immPerc').value) || 0) / 100;
+  const enePerc = (parseFloat(document.getElementById('enePerc').value) || 0) / 100;
 
-  // B. Plafond scaglioni
-  const totale = matBeni + immBeni + importoAmmPV;
-  const sc1 = Math.min(totale, 2_500_000);
-  const sc2 = Math.min(Math.max(totale - 2_500_000, 0), 7_500_000);
-  const sc3 = Math.min(Math.max(totale - 10_000_000, 0), 10_000_000);
-
-  // C. Maggiorazione
-  const m1 = sc1 * 1.8;
-  const m2 = sc2 * 1.0;
-  const m3 = sc3 * 0.5;
-  const magg = m1 + m2 + m3;
-
-  // D. Risparmio fiscale
-  const risp = magg * ires;
-
-  // Step 4: Cash flow anno-per-anno
-  const anni = coefAmm > 0 ? Math.max(1, Math.round(1 / coefAmm)) : 0;
-  const annuo = anni > 0 ? risp / anni : 0;
+  const leasingCat = document.getElementById('leasingCat').value;
+  const leasingDurata = parseFloat(document.getElementById('leasingDurata').value) || 0;
+  const leasingCoef = (parseFloat(document.getElementById('leasingCoef').value) || 0) / 100;
 
   return {
-    matBeni, immBeni, kWp, tipoPV, costoPVReale, coefAmm, ires,
-    valoreKwp, capPV, importoAmmPV,
-    totale, sc1, sc2, sc3, m1, m2, m3, magg, risp,
-    anni, annuo
+    tipoAcq, annoInv, ires,
+    matBeni, matPerc, immBeni, immPerc, enePerc,
+    leasingCat, leasingDurata, leasingCoef,
+    fv: fvImpianti.slice()
   };
 }
 
-// ============================================
+// --- CALCOLO COMPLETO ----------------------------------------------------
+function calcola() {
+  const inp = leggiInput();
+
+  // 1. Capping FV per impianto
+  const fvDettaglio = inp.fv.map(imp => {
+    const valKwp = getValoreKwp(imp.kWp, imp.tipo);
+    const ammissibile = imp.kWp * valKwp;
+    const costo = imp.costo > 0 ? imp.costo : ammissibile;
+    const agevolabile = (imp.kWp > 0 && imp.tipo)
+      ? Math.min(costo, ammissibile)
+      : 0;
+    return { ...imp, valKwp, ammissibile, agevolabile };
+  });
+  const totaleEnergia = fvDettaglio.reduce((s, x) => s + x.agevolabile, 0);
+
+  // 2. Totale investimento (con cap 20M)
+  const totaleLordo = inp.matBeni + inp.immBeni + totaleEnergia;
+  const eccedenza = Math.max(0, totaleLordo - CAP_AGEVOLABILE);
+  const totale = Math.min(totaleLordo, CAP_AGEVOLABILE);
+
+  // Se cap attivo, scalo proporzionalmente le 3 categorie
+  let matAgev = inp.matBeni;
+  let immAgev = inp.immBeni;
+  let eneAgev = totaleEnergia;
+  if (eccedenza > 0 && totaleLordo > 0) {
+    const k = CAP_AGEVOLABILE / totaleLordo;
+    matAgev = inp.matBeni * k;
+    immAgev = inp.immBeni * k;
+    eneAgev = totaleEnergia * k;
+  }
+
+  // 3. Ripartizione globale per scaglione
+  const sc1 = Math.min(totale, SCAGLIONI.ampiezze[0]);
+  const sc2 = Math.min(Math.max(totale - SCAGLIONI.ampiezze[0], 0), SCAGLIONI.ampiezze[1]);
+  const sc3 = Math.min(Math.max(totale - SCAGLIONI.ampiezze[0] - SCAGLIONI.ampiezze[1], 0), SCAGLIONI.ampiezze[2]);
+  const m1 = sc1 * SCAGLIONI.coeff[0];
+  const m2 = sc2 * SCAGLIONI.coeff[1];
+  const m3 = sc3 * SCAGLIONI.coeff[2];
+  const maggiorazioneTotale = m1 + m2 + m3;
+  const valoreTotaleAmmortamento = totale + maggiorazioneTotale;
+
+  // 4. Ripartizione a cascata Mat → Imm → Energia
+  const matRip = ripartisciPerScaglioni(matAgev, [0, 0, 0]);
+  const consumoDopoMat = matRip.ripartizione.slice();
+  const immRip = ripartisciPerScaglioni(immAgev, consumoDopoMat);
+  const consumoDopoImm = consumoDopoMat.map((v, i) => v + immRip.ripartizione[i]);
+  const eneRip = ripartisciPerScaglioni(eneAgev, consumoDopoImm);
+
+  const maggMat = matRip.maggiorazione;
+  const maggImm = immRip.maggiorazione;
+  const maggEne = eneRip.maggiorazione;
+
+  // 5. Piani pluriennali (leasing override per categoria)
+  const isLeasing = inp.tipoAcq === 'leasing';
+  const leasingApplies = cat => isLeasing && (inp.leasingCat === 'tutti' || inp.leasingCat === cat);
+
+  // Durata fiscale leasing = MAX(durataLeasing, 1/coefficiente)
+  const durataFiscale = (inp.leasingCoef > 0)
+    ? Math.max(inp.leasingDurata, 1 / inp.leasingCoef)
+    : inp.leasingDurata;
+
+  const pianoMat = leasingApplies('materiale')
+    ? pianoLeasing(maggMat, durataFiscale)
+    : pianoAmmortamento(maggMat, inp.matPerc);
+
+  const pianoImm = leasingApplies('immateriale')
+    ? pianoLeasing(maggImm, durataFiscale)
+    : pianoAmmortamento(maggImm, inp.immPerc);
+
+  const pianoEne = leasingApplies('energia')
+    ? pianoLeasing(maggEne, durataFiscale)
+    : pianoAmmortamento(maggEne, inp.enePerc);
+
+  // Piano annuale aggregato
+  const ANNI = 21;
+  const pianoTotale = [];
+  for (let i = 0; i < ANNI; i++) {
+    const variazione = (pianoMat[i] || 0) + (pianoImm[i] || 0) + (pianoEne[i] || 0);
+    pianoTotale.push({
+      anno: inp.annoInv + i,
+      variazione,
+      beneficio: variazione * inp.ires
+    });
+  }
+  // Trimma anni finali con variazione = 0
+  while (pianoTotale.length > 1 && pianoTotale[pianoTotale.length - 1].variazione < 0.005) {
+    pianoTotale.pop();
+  }
+
+  const beneficioTotale = maggiorazioneTotale * inp.ires;
+
+  return {
+    inp,
+    fvDettaglio, totaleEnergia,
+    totaleLordo, eccedenza, totale,
+    matAgev, immAgev, eneAgev,
+    sc1, sc2, sc3, m1, m2, m3, maggiorazioneTotale, valoreTotaleAmmortamento,
+    maggMat, maggImm, maggEne,
+    pianoMat, pianoImm, pianoEne, pianoTotale,
+    beneficioTotale,
+    isLeasing, durataFiscale
+  };
+}
+
+// ==========================================================================
 // RENDER UI
-// ============================================
+// ==========================================================================
 
 const fmt = n => '€ ' + Math.round(n).toLocaleString('it-IT');
+const fmtNum = n => Number(n).toLocaleString('it-IT', { maximumFractionDigits: 0 });
 
 function pulse(el) {
   el.classList.remove('num-pulse');
@@ -387,108 +670,237 @@ function pulse(el) {
   el.classList.add('num-pulse');
 }
 
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const newVal = String(val);
+  if (el.textContent !== newVal) {
+    el.textContent = newVal;
+    pulse(el);
+  }
+}
+
+function renderFVList() {
+  const wrap = document.getElementById('fvList');
+  wrap.innerHTML = '';
+  fvImpianti.forEach((imp, idx) => {
+    const row = document.createElement('div');
+    row.className = 'p-3 bg-slate-50 border border-slate-200 rounded-xl';
+    row.innerHTML = `
+      <div class="flex items-center justify-between mb-2">
+        <div class="text-xs font-semibold text-slate-600">Impianto ${idx + 1}</div>
+        ${fvImpianti.length > 1 ? `<button type="button" data-rm="${idx}" class="text-xs text-slate-400 hover:text-red-500">Rimuovi</button>` : ''}
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <div>
+          <label class="block text-[10px] font-semibold text-slate-500 mb-1">
+            kWp
+            <span class="tip text-slate-400">ⓘ
+              <span class="tip-body">Potenza di picco dell'impianto in kilowatt-picco.</span>
+            </span>
+          </label>
+          <input type="number" data-fv-kwp="${idx}" min="0" step="1" value="${imp.kWp}"
+            class="w-full px-2 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold">
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold text-slate-500 mb-1">
+            Modulo FV
+            <span class="tip text-slate-400">ⓘ
+              <span class="tip-body">Tipologia modulo da Registro ENEA: Lettera B (standard) o Lettera C (alta efficienza/UE).</span>
+            </span>
+          </label>
+          <select data-fv-tipo="${idx}" class="w-full px-2 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium">
+            <option value="" ${!imp.tipo ? 'selected' : ''}>—</option>
+            <option value="B" ${imp.tipo === 'B' ? 'selected' : ''}>Lettera B</option>
+            <option value="C" ${imp.tipo === 'C' ? 'selected' : ''}>Lettera C</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold text-slate-500 mb-1">Costo netto IVA (€)</label>
+          <input type="number" data-fv-costo="${idx}" min="0" step="1000" value="${imp.costo}" placeholder="0 = solo cap"
+            class="w-full px-2 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold">
+        </div>
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+
+  wrap.querySelectorAll('[data-fv-kwp]').forEach(el => {
+    el.addEventListener('input', e => {
+      const i = parseInt(e.target.dataset.fvKwp, 10);
+      fvImpianti[i].kWp = parseFloat(e.target.value) || 0;
+      render();
+    });
+  });
+  wrap.querySelectorAll('[data-fv-tipo]').forEach(el => {
+    el.addEventListener('change', e => {
+      const i = parseInt(e.target.dataset.fvTipo, 10);
+      fvImpianti[i].tipo = e.target.value;
+      render();
+    });
+  });
+  wrap.querySelectorAll('[data-fv-costo]').forEach(el => {
+    el.addEventListener('input', e => {
+      const i = parseInt(e.target.dataset.fvCosto, 10);
+      fvImpianti[i].costo = parseFloat(e.target.value) || 0;
+      render();
+    });
+  });
+  wrap.querySelectorAll('[data-rm]').forEach(el => {
+    el.addEventListener('click', e => {
+      const i = parseInt(e.target.dataset.rm, 10);
+      fvImpianti.splice(i, 1);
+      renderFVList();
+      render();
+    });
+  });
+}
+
+function renderTableScaglioni(r) {
+  const tbody = document.getElementById('tableSc');
+  const rows = [
+    { label: '1ª · 0 → 2,5 M', base: r.sc1, c: 180, magg: r.m1 },
+    { label: '2ª · 2,5 → 10 M', base: r.sc2, c: 100, magg: r.m2 },
+    { label: '3ª · 10 → 20 M', base: r.sc3, c: 50,  magg: r.m3 },
+  ];
+  tbody.innerHTML = rows.map(row => `
+    <tr class="border-b border-slate-100 last:border-0">
+      <td class="py-2.5 font-medium">${row.label}</td>
+      <td class="py-2.5 text-right">${fmt(row.base)}</td>
+      <td class="py-2.5 text-right text-slate-500">${row.c}%</td>
+      <td class="py-2.5 text-right font-semibold text-m-orange">${fmt(row.magg)}</td>
+    </tr>
+  `).join('') + `
+    <tr class="border-t-2 border-slate-200">
+      <td class="py-2.5 font-bold" colspan="3">Totale maggiorazione</td>
+      <td class="py-2.5 text-right font-bold text-m-orange">${fmt(r.maggiorazioneTotale)}</td>
+    </tr>
+  `;
+}
+
+function renderTableCategorie(r) {
+  const tbody = document.getElementById('tableCat');
+  const rows = [
+    { label: 'Beni Materiali',   inv: r.matAgev, magg: r.maggMat },
+    { label: 'Beni Immateriali', inv: r.immAgev, magg: r.maggImm },
+    { label: 'Autoproduzione Energia (FV)', inv: r.eneAgev, magg: r.maggEne },
+  ];
+  tbody.innerHTML = rows.map(row => `
+    <tr class="border-b border-slate-100 last:border-0">
+      <td class="py-2.5 font-medium">${row.label}</td>
+      <td class="py-2.5 text-right">${fmt(row.inv)}</td>
+      <td class="py-2.5 text-right font-semibold text-m-orange">${fmt(row.magg)}</td>
+    </tr>
+  `).join('') + `
+    <tr class="border-t-2 border-slate-200">
+      <td class="py-2.5 font-bold">Totale</td>
+      <td class="py-2.5 text-right font-bold">${fmt(r.totale)}</td>
+      <td class="py-2.5 text-right font-bold text-m-orange">${fmt(r.maggiorazioneTotale)}</td>
+    </tr>
+  `;
+}
+
+function renderPiano(r) {
+  const tbody = document.getElementById('tablePlan');
+  const chart = document.getElementById('chart');
+  const maxBen = Math.max(...r.pianoTotale.map(p => p.beneficio), 1);
+
+  tbody.innerHTML = r.pianoTotale.map(p => `
+    <tr class="border-b border-slate-100 last:border-0">
+      <td class="py-2 font-medium">${p.anno}</td>
+      <td class="py-2 text-right">${fmt(p.variazione)}</td>
+      <td class="py-2 text-right font-semibold text-m-orange">${fmt(p.beneficio)}</td>
+    </tr>
+  `).join('') + `
+    <tr class="border-t-2 border-slate-200">
+      <td class="py-2 font-bold">Totale</td>
+      <td class="py-2 text-right font-bold">${fmt(r.pianoTotale.reduce((s,p)=>s+p.variazione,0))}</td>
+      <td class="py-2 text-right font-bold text-m-orange">${fmt(r.beneficioTotale)}</td>
+    </tr>
+  `;
+
+  chart.innerHTML = r.pianoTotale.map(p => {
+    const w = maxBen > 0 ? (p.beneficio / maxBen) * 100 : 0;
+    return `
+      <div class="flex items-center gap-2 text-xs">
+        <div class="w-12 text-right font-semibold text-slate-500">${p.anno}</div>
+        <div class="flex-1 h-5 bg-slate-100 rounded-md overflow-hidden">
+          <div class="bar" style="width: ${w.toFixed(1)}%"></div>
+        </div>
+        <div class="w-24 text-right font-semibold text-m-navy">${fmt(p.beneficio)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
 function render() {
   const r = calcola();
 
-  // Risultati principali
-  const els = {
-    bigResult: fmt(r.risp),
-    bigMagg: fmt(r.magg),
-    rTotale: fmt(r.totale),
-    rSc1: fmt(r.m1),
-    rSc2: fmt(r.m2),
-    rSc3: fmt(r.m3),
-    rMagg: fmt(r.magg),
-  };
-  Object.keys(els).forEach(id => {
-    const el = document.getElementById(id);
-    if (el && el.textContent !== els[id]) {
-      el.textContent = els[id];
-      pulse(el);
-    }
-  });
+  // KPI hero
+  setText('bigResult', fmt(r.beneficioTotale));
+  setText('bigIres', (r.inp.ires * 100).toFixed(0) + '%');
+  setText('rTotale', fmt(r.totale));
+  setText('rMagg', fmt(r.maggiorazioneTotale));
+  setText('rValTot', fmt(r.valoreTotaleAmmortamento));
+  setText('totalFVHint', fmt(r.totaleEnergia));
+  setText('planTotal', fmt(r.beneficioTotale));
 
-  // PV cap hint
-  const pvHint = document.getElementById('pvCapHint');
-  const pvPlaceholder = document.getElementById('pvCapPlaceholder');
-  if (r.kWp > 0 && r.tipoPV) {
-    pvHint.classList.remove('hidden');
-    pvPlaceholder.classList.add('hidden');
-    document.getElementById('pvCapValue').textContent = fmt(r.capPV);
-    document.getElementById('pvAmmValue').textContent = fmt(r.importoAmmPV);
+  // Warning >20M
+  const warn = document.getElementById('warn20M');
+  if (r.eccedenza > 0) {
+    warn.classList.remove('hidden');
+    document.getElementById('excessVal').textContent = fmt(r.eccedenza);
   } else {
-    pvHint.classList.add('hidden');
-    pvPlaceholder.classList.remove('hidden');
+    warn.classList.add('hidden');
   }
 
-  // Cash flow
-  const cashList = document.getElementById('cashFlowList');
-  const annuiVal = document.getElementById('annuiVal');
-  annuiVal.textContent = r.anni || '—';
-
-  if (r.anni > 0 && r.annuo > 0) {
-    const currentYear = 2026;
-    let html = '';
-    for (let i = 0; i < r.anni; i++) {
-      const anno = currentYear + i;
-      const pct = (100 / r.anni).toFixed(1);
-      html += `
-        <div class="flex justify-between items-center py-1.5 border-b border-slate-100 last:border-0">
-          <span class="text-slate-700"><span class="font-semibold">Anno ${anno}</span> <span class="text-xs text-slate-400 ml-1">${pct}%</span></span>
-          <span class="font-semibold text-m-navy">${fmt(r.annuo)}</span>
-        </div>
-      `;
-    }
-    cashList.innerHTML = html;
+  // Leasing panel
+  const leasingPanel = document.getElementById('leasingPanel');
+  if (r.isLeasing) {
+    leasingPanel.classList.remove('hidden');
+    document.getElementById('leasingInfo').textContent =
+      `Durata fiscale = MAX(${r.inp.leasingDurata}, 1/${(r.inp.leasingCoef*100).toFixed(1)}%) = ${r.durataFiscale.toFixed(2)} anni. ` +
+      `Categoria leasing: ${r.inp.leasingCat}.`;
   } else {
-    cashList.innerHTML = '<div class="text-sm text-slate-500 py-3 text-center">Inserisci il coefficiente di ammortamento (Step 4) per vedere il piano annuale.</div>';
+    leasingPanel.classList.add('hidden');
   }
 
-  // Progress bar
-  const filled = [
-    r.matBeni > 0,
-    r.immBeni > 0,
-    (r.kWp > 0 && r.tipoPV) || true, // step 3 opzionale
-    r.coefAmm > 0
-  ].filter(Boolean).length;
-  const completed = [
-    r.matBeni > 0,
-    r.immBeni > 0,
-    r.kWp > 0 && r.tipoPV,
-    r.coefAmm > 0
-  ].filter(Boolean).length;
-  const progress = (completed / 4) * 100;
-  document.getElementById('progressBar').style.width = progress + '%';
-  document.getElementById('progressText').textContent = completed + '/4';
-
-  // Active step (focus → glow)
-  // (gestito da focus event sotto)
+  // Tabelle
+  renderTableScaglioni(r);
+  renderTableCategorie(r);
+  renderPiano(r);
 
   return r;
 }
 
-// ============================================
+// ==========================================================================
 // EVENTI
-// ============================================
+// ==========================================================================
 
-const inputIds = ['matBeni', 'immBeni', 'kwp', 'tipoPV', 'costoPV', 'coefAmm', 'ires'];
+const inputIds = [
+  'matBeni', 'matPerc', 'immBeni', 'immPerc', 'enePerc',
+  'annoInv', 'ires',
+  'leasingCat', 'leasingDurata', 'leasingCoef'
+];
 inputIds.forEach(id => {
   const el = document.getElementById(id);
+  if (!el) return;
   el.addEventListener('input', render);
   el.addEventListener('change', render);
-  el.addEventListener('focus', () => {
-    document.querySelectorAll('.step-card').forEach(c => c.classList.remove('is-active'));
-    const stepNum =
-      id === 'matBeni' ? 1 :
-      id === 'immBeni' ? 2 :
-      ['kwp','tipoPV','costoPV'].includes(id) ? 3 : 4;
-    document.getElementById('step' + stepNum)?.classList.add('is-active');
-  });
+});
+document.querySelectorAll('input[name="tipoAcq"]').forEach(el => {
+  el.addEventListener('change', render);
 });
 
-// ============================================
+document.getElementById('addFV').addEventListener('click', () => {
+  fvImpianti.push({ kWp: 0, tipo: '', costo: 0 });
+  renderFVList();
+  render();
+});
+
+// ==========================================================================
 // PDF DOWNLOAD
-// ============================================
+// ==========================================================================
 
 document.getElementById('downloadBtn').addEventListener('click', () => {
   const r = calcola();
@@ -498,10 +910,8 @@ document.getElementById('downloadBtn').addEventListener('click', () => {
   const orange = [255, 79, 0];
   const navy = [10, 31, 68];
   const gray = [107, 114, 128];
-
   let y = 20;
 
-  // Header brand
   doc.setFillColor(...navy);
   doc.rect(0, 0, 210, 12, 'F');
   doc.setTextColor(255, 255, 255);
@@ -510,7 +920,6 @@ document.getElementById('downloadBtn').addEventListener('click', () => {
   doc.text('MUFFIN  ·  La finanza agevolata smart', 14, 8);
 
   y = 24;
-  // Title
   doc.setTextColor(...navy);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(18);
@@ -520,160 +929,142 @@ document.getElementById('downloadBtn').addEventListener('click', () => {
   doc.setFontSize(9);
   doc.setTextColor(...gray);
   const dataStr = new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
-  doc.text('Generato il ' + dataStr + ' · Riferimento: L. 199/2025 art. 1 commi 427-436', 14, y);
+  doc.text('Generato il ' + dataStr + ' · L. 199/2025 art. 1 c. 427-436 · Anno investimento ' + r.inp.annoInv, 14, y);
   y += 10;
 
-  // Risultato grande
+  // KPI box
   doc.setFillColor(255, 241, 235);
   doc.roundedRect(14, y, 182, 26, 3, 3, 'F');
   doc.setTextColor(...gray);
   doc.setFontSize(8);
   doc.setFont('helvetica', 'bold');
-  doc.text('RISPARMIO FISCALE STIMATO (IRES ' + (r.ires*100).toFixed(0) + '%)', 18, y + 7);
+  doc.text('BENEFICIO FISCALE TOTALE (IRES ' + (r.inp.ires*100).toFixed(0) + '%)', 18, y + 7);
   doc.setTextColor(...orange);
   doc.setFontSize(22);
-  doc.setFont('helvetica', 'bold');
-  doc.text(fmt(r.risp), 18, y + 18);
+  doc.text(fmt(r.beneficioTotale), 18, y + 18);
   doc.setTextColor(...navy);
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
-  doc.text('su ' + fmt(r.magg) + ' di maggiorazione totale deducibile', 18, y + 23);
+  doc.text('Maggiorazione ' + fmt(r.maggiorazioneTotale) + ' · Valore ammortamento ' + fmt(r.valoreTotaleAmmortamento), 18, y + 23);
   y += 32;
 
-  // Sezione: Input
+  // Input
   doc.setTextColor(...navy);
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
-  doc.text('Input dell\'analisi', 14, y);
+  doc.text('Input', 14, y);
   y += 2;
   doc.setDrawColor(...orange);
-  doc.setLineWidth(0.5);
   doc.line(14, y, 60, y);
   y += 6;
-
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
-  const inputRows = [
-    ['Beni Materiali 4.0', fmt(r.matBeni)],
-    ['Beni Immateriali 4.0', fmt(r.immBeni)],
-    ['Fotovoltaico kWp', r.kWp ? r.kWp.toLocaleString('it-IT') + ' kWp · Tipologia ' + (r.tipoPV || '—') : '—'],
-    ['Costo PV reale (input)', r.costoPVReale > 0 ? fmt(r.costoPVReale) : 'non specificato (usato cap)'],
-    ['Importo PV ammissibile', fmt(r.importoAmmPV)],
-    ['Coefficiente ammortamento', (r.coefAmm * 100).toFixed(1) + '% (' + (r.anni || '—') + ' anni)'],
-    ['Aliquota IRES', (r.ires * 100).toFixed(1) + '%'],
+  const rows = [
+    ['Tipologia acquisto', r.isLeasing ? `Leasing (${r.inp.leasingCat}, ${r.inp.leasingDurata}y, coef ${(r.inp.leasingCoef*100).toFixed(1)}%)` : 'Acquisto diretto'],
+    ['Beni Materiali', fmt(r.inp.matBeni) + ' · ' + (r.inp.matPerc*100).toFixed(1) + '%'],
+    ['Beni Immateriali', fmt(r.inp.immBeni) + ' · ' + (r.inp.immPerc*100).toFixed(1) + '%'],
+    ['Energia (FV totale)', fmt(r.totaleEnergia) + ' · ' + (r.inp.enePerc*100).toFixed(1) + '%'],
   ];
-  inputRows.forEach(([label, value]) => {
-    doc.setTextColor(...gray);
-    doc.text(label, 14, y);
-    doc.setTextColor(...navy);
-    doc.setFont('helvetica', 'bold');
-    doc.text(value, 196, y, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-    y += 5.5;
+  rows.forEach(([l, v]) => {
+    doc.setTextColor(...gray); doc.text(l, 14, y);
+    doc.setTextColor(...navy); doc.setFont('helvetica','bold'); doc.text(v, 196, y, { align: 'right' });
+    doc.setFont('helvetica','normal'); y += 5.5;
   });
   y += 4;
 
-  // Sezione: Calcolo scaglioni
-  doc.setTextColor(...navy);
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Calcolo per scaglioni', 14, y);
-  y += 2;
-  doc.line(14, y, 60, y);
-  y += 6;
-
-  doc.setFontSize(9);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(...gray);
-  doc.text('Investimento totale agevolabile', 14, y);
-  doc.setTextColor(...navy);
-  doc.setFont('helvetica', 'bold');
-  doc.text(fmt(r.totale), 196, y, { align: 'right' });
-  doc.setFont('helvetica', 'normal');
-  y += 7;
-
-  const scRows = [
-    ['1ª fascia · 180% (≤ 2,5M)', fmt(r.sc1), fmt(r.m1)],
-    ['2ª fascia · 100% (2,5M-10M)', fmt(r.sc2), fmt(r.m2)],
-    ['3ª fascia · 50% (10M-20M)', fmt(r.sc3), fmt(r.m3)],
+  // Scaglioni
+  doc.setTextColor(...navy); doc.setFontSize(11); doc.setFont('helvetica','bold');
+  doc.text('Ripartizione per scaglione', 14, y); y += 2;
+  doc.line(14, y, 60, y); y += 6;
+  doc.setFontSize(9); doc.setFont('helvetica','normal');
+  const sc = [
+    ['1a · 180% (0-2,5M)', r.sc1, r.m1],
+    ['2a · 100% (2,5-10M)', r.sc2, r.m2],
+    ['3a · 50% (10-20M)', r.sc3, r.m3],
   ];
-  doc.setFillColor(245, 246, 248);
-  doc.rect(14, y - 4, 182, 5, 'F');
-  doc.setTextColor(...gray);
-  doc.setFontSize(8);
-  doc.text('Fascia', 16, y);
-  doc.text('Base imponibile', 110, y, { align: 'right' });
-  doc.text('Maggiorazione', 196, y, { align: 'right' });
-  y += 6;
-  doc.setFontSize(9);
-  scRows.forEach(([label, base, magg]) => {
-    doc.setTextColor(...navy);
-    doc.text(label, 16, y);
-    doc.text(base, 110, y, { align: 'right' });
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...orange);
-    doc.text(magg, 196, y, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-    y += 5.5;
+  sc.forEach(([l, b, m]) => {
+    doc.setTextColor(...gray); doc.text(l, 14, y);
+    doc.setTextColor(...navy); doc.text(fmt(b), 110, y, { align: 'right' });
+    doc.setTextColor(...orange); doc.setFont('helvetica','bold'); doc.text(fmt(m), 196, y, { align: 'right' });
+    doc.setFont('helvetica','normal'); y += 5.5;
   });
-  y += 1;
-  doc.setDrawColor(...gray);
-  doc.setLineWidth(0.2);
-  doc.line(14, y, 196, y);
   y += 4;
-  doc.setTextColor(...navy);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.text('Maggiorazione totale', 14, y);
-  doc.setTextColor(...orange);
-  doc.text(fmt(r.magg), 196, y, { align: 'right' });
-  y += 8;
 
-  // Sezione: Cash flow (se calcolato)
-  if (r.anni > 0 && r.annuo > 0) {
-    doc.setTextColor(...navy);
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Piano cash-flow (lineare)', 14, y);
-    y += 2;
-    doc.setDrawColor(...orange);
-    doc.line(14, y, 60, y);
-    y += 6;
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    const startY = 2026;
-    for (let i = 0; i < r.anni; i++) {
-      doc.setTextColor(...gray);
-      doc.text('Anno ' + (startY + i), 14, y);
-      doc.setTextColor(...navy);
-      doc.setFont('helvetica', 'bold');
-      doc.text(fmt(r.annuo), 196, y, { align: 'right' });
-      doc.setFont('helvetica', 'normal');
-      y += 5.5;
-    }
-    y += 4;
-  }
+  // Piano
+  if (y > 230) { doc.addPage(); y = 20; }
+  doc.setTextColor(...navy); doc.setFontSize(11); doc.setFont('helvetica','bold');
+  doc.text('Piano pluriennale', 14, y); y += 2;
+  doc.line(14, y, 60, y); y += 6;
+  doc.setFontSize(8); doc.setFont('helvetica','bold');
+  doc.setTextColor(...gray);
+  doc.text('Anno', 14, y);
+  doc.text('Variazione fiscale', 110, y, { align: 'right' });
+  doc.text('Beneficio IRES', 196, y, { align: 'right' });
+  y += 5;
+  doc.setFont('helvetica','normal'); doc.setFontSize(9);
+  r.pianoTotale.forEach(p => {
+    if (y > 275) { doc.addPage(); y = 20; }
+    doc.setTextColor(...navy); doc.text(String(p.anno), 14, y);
+    doc.text(fmt(p.variazione), 110, y, { align: 'right' });
+    doc.setTextColor(...orange); doc.setFont('helvetica','bold');
+    doc.text(fmt(p.beneficio), 196, y, { align: 'right' });
+    doc.setFont('helvetica','normal'); y += 5;
+  });
+  y += 3;
 
   // Disclaimer
-  if (y > 250) { doc.addPage(); y = 20; }
-  doc.setTextColor(...gray);
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'italic');
-  const disclaimer = 'Stima indicativa. Importi eccedenti euro 20M annuali non sono agevolabili. Il piano cash-flow assume distribuzione lineare e non considera la riduzione 50% dell\'ammortamento ordinario del primo anno (l\'iperammortamento non subisce dimezzamento). Per il calcolo definitivo serve perizia tecnica e certificazione contabile. Documento informativo, non sostituisce parere del consulente di riferimento.';
-  const splitDisc = doc.splitTextToSize(disclaimer, 182);
-  doc.text(splitDisc, 14, y);
+  if (y > 255) { doc.addPage(); y = 20; }
+  doc.setTextColor(...gray); doc.setFontSize(8); doc.setFont('helvetica','italic');
+  const disc = 'Stima indicativa. Importi eccedenti euro 20M annuali non sono agevolabili. La quota del primo anno e\' dimezzata (regola fiscale ordinaria sull\'ammortamento). Per il calcolo definitivo serve perizia tecnica e certificazione contabile.';
+  doc.text(doc.splitTextToSize(disc, 182), 14, y);
 
-  // Footer
-  doc.setTextColor(...navy);
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...navy); doc.setFontSize(8); doc.setFont('helvetica','normal');
   doc.text('muffin.io  ·  La finanza agevolata smart', 14, 290);
-
   doc.save('Stima-Iperammortamento-Muffin.pdf');
 });
 
-// Init
+// ==========================================================================
+// INIT
+// ==========================================================================
+renderFVList();
 render();
+
+// ==========================================================================
+// SELF-TEST (rimovibile in produzione)
+// ==========================================================================
+window.__selfTest = function() {
+  // Test case Excel: solo FV, 100k €, 10 kWp, Lettera C
+  document.getElementById('matBeni').value = 0;
+  document.getElementById('immBeni').value = 0;
+  document.getElementById('matPerc').value = 0;
+  document.getElementById('immPerc').value = 0;
+  document.getElementById('enePerc').value = 20;
+  document.getElementById('ires').value = 24;
+  document.getElementById('annoInv').value = 2026;
+  document.querySelector('input[name="tipoAcq"][value="acquisto"]').checked = true;
+  fvImpianti = [{ kWp: 10, tipo: 'C', costo: 100000 }];
+  renderFVList();
+  const r = render();
+  const t = (name, got, exp, tol = 1) => {
+    const ok = Math.abs(got - exp) < tol;
+    console.log(`${ok ? '✅' : '❌'} ${name}: got ${got.toFixed(2)}, expected ${exp}`);
+    return ok;
+  };
+  let all = true;
+  all &= t('totaleEnergia', r.totaleEnergia, 15000);
+  all &= t('maggiorazione', r.maggiorazioneTotale, 27000);
+  all &= t('valoreTotAmm', r.valoreTotaleAmmortamento, 42000);
+  all &= t('anno 1 variazione', r.pianoTotale[0].variazione, 2700);
+  all &= t('anno 2 variazione', r.pianoTotale[1].variazione, 5400);
+  all &= t('anno 5 variazione', r.pianoTotale[4].variazione, 5400);
+  all &= t('anno 6 residuo', r.pianoTotale[5].variazione, 2700);
+  all &= t('beneficio totale', r.beneficioTotale, 6480);
+  const somma = r.pianoTotale.reduce((s,p)=>s+p.variazione,0);
+  all &= t('somma piano = magg', somma, 27000);
+  console.log(all ? '🎉 ALL TESTS PASSED' : '⚠️ Some tests failed');
+  return r;
+};
+console.log('Self-test disponibile: window.__selfTest()');
 </script>
 
 </body>
